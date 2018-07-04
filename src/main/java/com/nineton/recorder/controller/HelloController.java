@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nineton.recorder.dao.RecordListMongoDao;
+import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.RecordLists;
 
 import redis.clients.jedis.Jedis;
@@ -17,6 +18,9 @@ public class HelloController {
 	RecordListMongoDao recordListMongoDao;
 	
 	@Autowired
+	VoiceToWordsMongoDao voiceDao;
+	
+	@Autowired
 	Jedis redis;
 	
 	@RequestMapping("/index")
@@ -27,6 +31,11 @@ public class HelloController {
 	public RecordLists get() {
 		RecordLists record = recordListMongoDao.getRecord(0);
 		return record;
+	}
+	
+	@RequestMapping("/getList")
+	public void getList() {
+		voiceDao.getListByStatus(1, 1, 20);
 	}
 	
 	@RequestMapping("/getRedis")

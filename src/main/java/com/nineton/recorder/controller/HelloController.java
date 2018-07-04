@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nineton.recorder.dao.RecordListMongoDao;
 import com.nineton.recorder.entity.RecordLists;
 
+import redis.clients.jedis.Jedis;
+
 @RestController
 @RequestMapping(path = "/hello")
 public class HelloController {
 	
 	@Autowired
 	RecordListMongoDao recordListMongoDao;
+	
+	@Autowired
+	Jedis redis;
 	
 	@RequestMapping("/index")
 	public String helloWorld() {
@@ -24,5 +29,10 @@ public class HelloController {
 		return record;
 	}
 	
+	@RequestMapping("/getRedis")
+	public String getByRedisKey() {
+		String value = redis.get("a");
+		return value;
+	}
 	
 }

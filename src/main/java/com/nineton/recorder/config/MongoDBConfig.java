@@ -20,12 +20,12 @@ public class MongoDBConfig {
 	private String database;
 	
 	public @Bean MongoClient mongoClient() {
-		System.out.print(uri);
+//		System.out.print(uri);
 		return new MongoClient(new MongoClientURI(uri));
 	}
 	
 	public @Bean MongoDatabase mongoDatabase() {
-		System.out.println(mongoClient().getDatabase(database).getCollection("rec_record_lists").find().first());;
+//		System.out.println(mongoClient().getDatabase(database).getCollection("rec_record_lists").find().first());;
 		return mongoClient().getDatabase(database);
 	}
 

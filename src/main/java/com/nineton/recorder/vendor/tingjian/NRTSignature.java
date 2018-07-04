@@ -1,4 +1,4 @@
-package com.nineton.recorder.controller;
+package com.nineton.recorder.vendor.tingjian;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

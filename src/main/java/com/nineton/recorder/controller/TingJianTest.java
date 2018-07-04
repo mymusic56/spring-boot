@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.runners.MethodSorters;
 
+import com.nineton.recorder.vendor.tingjian.NRTSignature;
 
 import org.apache.http.ssl.SSLContextBuilder;  
 import org.apache.http.ssl.TrustStrategy;  
@@ -41,7 +42,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;  
 import javax.net.ssl.X509TrustManager;  
 
-public class Demo {
+/**
+ * 讯飞听见测试demo
+ * @author Administrator
+ *
+ */
+public class TingJianTest {
 
 	private static final String CHARSET_UTF8 = "UTF-8";
 
@@ -51,7 +57,7 @@ public class Demo {
 	
 	public static void main(String[] args) {
 		
-		Demo demo = new Demo();
+		TingJianTest demo = new TingJianTest();
 //		demo.uplaod();
 		demo.step02_getResult();
 	}

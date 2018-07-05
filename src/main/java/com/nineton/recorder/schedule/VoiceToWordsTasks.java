@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.nineton.recorder.service.DownloadService;
+import com.nineton.recorder.service.ResultService;
 import com.nineton.recorder.service.UploadService;
 
 @Component
@@ -19,6 +20,9 @@ public class VoiceToWordsTasks {
 	
 	@Autowired
 	UploadService uploadService;
+	
+	@Autowired
+	ResultService resultService;
 	
 	@Scheduled(initialDelay = 1000, fixedDelay = 2000)
 	@Async
@@ -34,9 +38,9 @@ public class VoiceToWordsTasks {
 //		logger.info(" ............... upload ...............");
 	}
 
-//	@Scheduled(initialDelay = 3000, fixedDelay = 2000)
-//	@Async
-//	public void fileResult() {
+	@Scheduled(initialDelay = 2000, fixedDelay = 2000)
+	public void fileResult() {
 //		logger.info(" ----------- result -----------");
-//	}
+		resultService.getResult();
+	}
 }

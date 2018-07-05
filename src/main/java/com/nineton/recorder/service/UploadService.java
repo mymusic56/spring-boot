@@ -41,23 +41,48 @@ public class UploadService {
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
 	
-	public UploadService(){
+	/**
+	 * 根据录音时长获取初始查询时间
+	 * @param duration  录音时长
+	 * @return 单位：秒
+	 */
+	
+	public int getNextQueryTime(int duration) {
+		//5分钟
+		int queryTimeInterval = 300;
+		if (duration <= 300) {
+			queryTimeInterval = 300;//5分钟
+		} else if (duration <= 1800) {
+			//半小时
+			queryTimeInterval = 600;//10分钟
+		} else if (duration < 3600) {
+			//1小时
+			queryTimeInterval = 1200;//20分钟
+		} else if (duration < 7200) {
+			//2小时
+			queryTimeInterval = 1800;//30分钟
+		} else {
+			//3小时
+			queryTimeInterval = 1800;//40分钟
+		}
 		
+		return queryTimeInterval;
+	}
+	
+	public Boolean upload(){
 		params = new HashMap<String, String>();
 		params.put("has_participle", "false");
 		
 		logger = Logger.getLogger(UploadService.class);
 		try {
-			this.lc = LfasrClientImp.initLfasrClient();
+			lc = LfasrClientImp.initLfasrClient();
 		} catch (LfasrException e) {
 			// 初始化异常，解析异常描述信息
 			Message initMsg = JSON.parseObject(e.getMessage(), Message.class);
 			logger.error("ecode=" + initMsg.getErr_no()+",failed=" + initMsg.getFailed());
 			System.exit(0);
 		}
-	}
-	
-	public Boolean upload(){
+		
 		//获取已下载的文档
 		String log = redis.rpop(uploadQueue);
 		VoiceToWordsEntity voiceEntity = null;
@@ -96,17 +121,15 @@ public class UploadService {
 			if (ok == 0) {
 				// 创建任务成功
 				task_id = uploadMsg.getData();
+//				logger.info("task_id=" + task_id);
 				
+				int next_query_time = getNextQueryTime(voiceEntity.getDuration());
 				voiceEntity.setStatus(3);
 				voiceEntity.setRemark("上传成功");
+				voiceEntity.setNext_query_time(new Date(System.currentTimeMillis() + next_query_time*1000));
 				voiceEntity.setTask_id(task_id);
 				voiceDao.updateTaskId(voiceEntity.getId(), voiceEntity);
 				
-				logger.info("task_id=" + task_id);
-				//保存记录的任务ID和下次查询时间
-				int tmpIntervalTime = voiceEntity.getDuration();
-				tmpIntervalTime = tmpIntervalTime <= firstIntervalTime ? firstIntervalTime : tmpIntervalTime;
-				int next_query_time = (int)(new Date().getTime()/1000) + tmpIntervalTime;
 				
 				//删除文件
 				if (local_file != "" && local_file != null) {
@@ -134,6 +157,7 @@ public class UploadService {
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
 			return false;
 		}
+		lc = null;
 		return true;
 	}
 }

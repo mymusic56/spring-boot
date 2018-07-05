@@ -1,5 +1,7 @@
 package com.nineton.recorder.entity;
 
+import java.util.Date;
+
 public class VoiceToWordsEntity {
 
 	private String id;
@@ -13,6 +15,10 @@ public class VoiceToWordsEntity {
 	private long created;
 	private String content;
 	private int status;
+	
+	private int query_times;
+	
+	private Date next_query_time;
 
 	public void setId(String id) {
 		this.id = id;
@@ -102,5 +108,20 @@ public class VoiceToWordsEntity {
 		this.local_path = local_path;
 	}
 
-	
+	public int getQuery_times() {
+		return query_times;
+	}
+
+	public void setQuery_times(int query_times) {
+		this.query_times = query_times;
+	}
+
+	public Date getNext_query_time() {
+		return next_query_time;
+	}
+
+	public void setNext_query_time(Date next_query_time) {
+		this.next_query_time = next_query_time;
+	}
+
 }

@@ -43,6 +43,7 @@ public class DownloadService{
 	 * @return
 	 */
 	public Boolean download(){
+		logger.info(".........start download.........");
 		//获取待下载的数据
 		String log = redis.rpop(this.downloadQueue);
 		if (log == null) {
@@ -71,11 +72,11 @@ public class DownloadService{
 		if (voiceEntity.getUrl().startsWith("file")) {
 			bucket = "record-tool";
 		}
-		basePath = basePath.replace("__BUCKET__", bucket);
+		String basePathTmp = basePath.replace("__BUCKET__", bucket);
 		
 //			System.out.println("start download file: "+filename);
 //			logger.info("start download file: "+filename);
-		String filePath = FileDownload.saveUrlAs(basePath+voiceEntity.getUrl(), tempDir, filename, "GET");
+		String filePath = FileDownload.saveUrlAs(basePathTmp+voiceEntity.getUrl(), tempDir, filename, "GET");
 //			logger.info("end download file:"+filePath);
 		if("".equals(filePath)){
 			logger.error("下载失败:"+log);

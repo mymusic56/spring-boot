@@ -4,11 +4,40 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSON;
+import com.nineton.recorder.entity.VoiceToWordsEntity;
+import com.nineton.recorder.service.DownloadService;
 import com.nineton.recorder.util.Aes;
 
 public class AesTest {
     public static void main(String[] args) throws Exception {
+    	Logger logger = Logger.getLogger(AesTest.class);
+    	logger.info("你好");
+    	String log = "{\r\n" + 
+    			"    \"id\" : \"5b191c1e5967515c34789f08\",\r\n" + 
+    			"    \"user_id\" : 1.0,\r\n" + 
+    			"    \"nickname\" : \"185****1305\",\r\n" + 
+    			"    \"c_id\" : 1513417206629.0,\r\n" + 
+    			"    \"task_id\" : \"DKHJQ201806071900EF55\",\r\n" + 
+    			"    \"duration\" : 85,\r\n" + 
+    			"    \"url\" : \"recorder/test/test.mp3\",\r\n" + 
+    			"    \"remark\" : \"\",\r\n" + 
+    			"    \"created\" : 1528372254,\r\n" + 
+    			"    \"modified\" : \"2018-06-07T20:00:03.000Z\",\r\n" + 
+    			"    \"finished\" : \"2018-06-07T20:00:03.000Z\",\r\n" + 
+    			"    \"content\" : \"成天铁面无私点中间，相互好戏来，向诸王朝马在身边。三田鼠身轻如燕，说B叔是小宝，穿上很殊胜全书，伸手轻抚。一般无声。说\",\r\n" + 
+    			"    \"status\" : 1.0,\r\n" + 
+    			"    \"data\" : \"\",\r\n" + 
+    			"    \"enabled\" : 1,\r\n" + 
+    			"    \"words_num\" : 59,\r\n" + 
+    			"    \"file_name\" : \"\"\r\n" + 
+    			"}";
+//		Gson gson = new Gson();
+//    	VoiceToWordsEntity voiceEntity = gson.fromJson(log, VoiceToWordsEntity.class);
+    	VoiceToWordsEntity voiceEntity = JSON.parseObject(log, VoiceToWordsEntity.class);
+		System.out.println(voiceEntity.getContent()+voiceEntity.getC_id());
         /*
          * 此处使用AES-128-ECB加密模式，key需要为16位。
          */

@@ -14,6 +14,7 @@ import com.nineton.recorder.entity.VoiceToWordsEntity;
 import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -39,11 +40,53 @@ public class VoiceToWordsMongoDao {
 				eq("_id", new ObjectId(id)),
 				combine(
 						set("status", voiceEntity.getStatus()),
-						set("remark", voiceEntity.getRemark())
+						set("remark", voiceEntity.getRemark()),
+						set("modified", new Date(System.currentTimeMillis()+28800000))
 			    )
 		);
 		return result.getModifiedCount();
 	}
+	
+	/**
+	 * 更新本地路径
+	 * @param id
+	 * @param voiceEntity
+	 * @return
+	 */
+	public long updateLocalPath(String id, VoiceToWordsEntity voiceEntity) {
+		MongoCollection<Document> collection = db.getCollection(this.collectionName);
+		UpdateResult result = collection.updateOne(
+				eq("_id", new ObjectId(id)),
+				combine(
+						set("status", voiceEntity.getStatus()),
+						set("local_path", voiceEntity.getLocal_path()),
+						set("remark", voiceEntity.getRemark()),
+						set("modified", new Date(System.currentTimeMillis()+28800000))
+			    )
+		);
+		return result.getModifiedCount();
+	}
+	
+	/**
+	 * 更新上传成功后的task_id
+	 * @param id
+	 * @param voiceEntity
+	 * @return
+	 */
+	public long updateTaskId(String id, VoiceToWordsEntity voiceEntity) {
+		MongoCollection<Document> collection = db.getCollection(this.collectionName);
+		UpdateResult result = collection.updateOne(
+				eq("_id", new ObjectId(id)),
+				combine(
+						set("status", voiceEntity.getStatus()),
+						set("task_id", voiceEntity.getTask_id()),
+						set("remark", voiceEntity.getRemark()),
+						set("modified", new Date(System.currentTimeMillis()+28800000))
+			    )
+		);
+		return result.getModifiedCount();
+	}
+	
 	/**
 	 * 根据状态列表获取录音转文字记录
 	 * @param status

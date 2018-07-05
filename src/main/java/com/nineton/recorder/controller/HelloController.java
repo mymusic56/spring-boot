@@ -1,5 +1,7 @@
 package com.nineton.recorder.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +42,9 @@ public class HelloController {
 	
 	@RequestMapping("/getRedis")
 	public String getByRedisKey() {
+		System.out.println(new Date(System.currentTimeMillis()+28800000));
 		String value = redis.get("a");
+		System.out.println(value);
 		return value;
 	}
 	

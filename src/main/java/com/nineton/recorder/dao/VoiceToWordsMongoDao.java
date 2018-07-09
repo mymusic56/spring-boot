@@ -103,6 +103,7 @@ public class VoiceToWordsMongoDao {
 		UpdateResult result = collection.updateOne(
 				eq("_id", new ObjectId(id)),
 				combine(
+						set("type", 2),//1：讯飞听见接口， 2： 讯飞开放平台接口
 						set("status", voiceEntity.getStatus()),
 						set("local_path", voiceEntity.getLocal_path()),
 						set("remark", voiceEntity.getRemark()),
@@ -200,6 +201,7 @@ public class VoiceToWordsMongoDao {
 			entity.setStatus(doc.getInteger("status"));
 			entity.setUrl(doc.getString("url"));
 			entity.setLocal_path(doc.getString("local_path"));
+			entity.setQuery_times(doc.getInteger("query_times"));
 			
 			list.add(entity);
 		}

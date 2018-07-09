@@ -146,7 +146,6 @@ public class ResultService {
 						// 更新下次处理时间
 						int tmpIntervalTime = intervalTimes.get(voiceEntity.getQuery_times() + 1);
 
-						times = getDateTime();
 						voiceEntity.setQuery_times(voiceEntity.getQuery_times() + 1);
 						voiceEntity.setNext_query_time(new Date(System.currentTimeMillis() + 28800000 + tmpIntervalTime*1000));
 						voiceEntity.setStatus(3);

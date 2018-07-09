@@ -7,12 +7,22 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSON;
+import com.nineton.recorder.bean.RequestRootBean;
 import com.nineton.recorder.entity.VoiceToWordsEntity;
 import com.nineton.recorder.service.DownloadService;
 import com.nineton.recorder.util.Aes;
+import com.nineton.recorder.util.FileDownload;
 
 public class AesTest {
     public static void main(String[] args) throws Exception {
+    	
+    	DownloadService aa = new DownloadService();
+    	long fileId = 1513417206608L;
+    	String result = aa.getSingUrl(fileId);
+    	System.out.println(result);
+    	RequestRootBean result2 = JSON.parseObject(result, RequestRootBean.class);
+    	System.out.println(result2.getStatus());
+    	System.out.println(result2.getResult().getShare_url());;
     	Logger logger = Logger.getLogger(AesTest.class);
     	logger.info("你好");
     	String log = "{\r\n" + 

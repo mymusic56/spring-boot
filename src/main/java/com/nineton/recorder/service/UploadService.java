@@ -18,6 +18,7 @@ import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.VoiceToWordsEntity;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 @Service
 @PropertySource("application.properties")
@@ -35,8 +36,10 @@ public class UploadService {
 	
 	private String uploadQueue = "REORDER:voice_to_words_upload_queue";
 	
-	@Autowired
 	Jedis redis;
+	
+	@Autowired
+	JedisPool jedisPoll;
 	
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
@@ -84,13 +87,23 @@ public class UploadService {
 		}
 		
 		//获取已下载的文档
-		String log = redis.rpop(uploadQueue);
+		String log = null;
+		redis = jedisPoll.getResource();
+		try {
+			log = redis.rpop(uploadQueue);
+		} catch (Exception e) {
+			closeRedis();
+			logger.error("redis error: [rpop from uploadQueue]"+e.getMessage());
+		}
+		
 		VoiceToWordsEntity voiceEntity = null;
 		if (log == null) {
+			closeRedis();
 			return false;
 		}
 		voiceEntity = JSON.parseObject(log, VoiceToWordsEntity.class);
 		if(voiceEntity == null){
+			closeRedis();
 			logger.error("upload - json parse error:"+log);
 			return false;
 		}
@@ -105,6 +118,7 @@ public class UploadService {
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("文件下载至本地出错");
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
+			closeRedis();
 			return false;
 		}
 		
@@ -145,6 +159,7 @@ public class UploadService {
 				voiceEntity.setStatus(4);
 				voiceEntity.setRemark("上传失败"+",ecode=" + uploadMsg.getErr_no()+",failed=" + uploadMsg.getFailed());
 				voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
+				closeRedis();
 				return false;
 			}
 		} catch (LfasrException e) {
@@ -155,9 +170,15 @@ public class UploadService {
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("上传异常"+",ecode=" + uploadMsg.getErr_no()+",failed=" + uploadMsg.getFailed());
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
+			closeRedis();
 			return false;
 		}
 		lc = null;
+		redis.close();
 		return true;
+	}
+	
+	public void closeRedis() {
+		redis.close();
 	}
 }

@@ -36,8 +36,6 @@ public class UploadService {
 	
 	private String uploadQueue = "REORDER:voice_to_words_upload_queue";
 	
-	Jedis redis;
-	
 	@Autowired
 	JedisPool jedisPoll;
 	
@@ -73,37 +71,41 @@ public class UploadService {
 	}
 	
 	public Boolean upload(){
+		
 		params = new HashMap<String, String>();
 		params.put("has_participle", "false");
 		
 		logger = Logger.getLogger(UploadService.class);
+		logger.info("upload start [1]");
 		try {
 			lc = LfasrClientImp.initLfasrClient();
 		} catch (LfasrException e) {
 			// 初始化异常，解析异常描述信息
 			Message initMsg = JSON.parseObject(e.getMessage(), Message.class);
 			logger.error("ecode=" + initMsg.getErr_no()+",failed=" + initMsg.getFailed());
-			System.exit(0);
+			return false;
 		}
 		
 		//获取已下载的文档
 		String log = null;
-		redis = jedisPoll.getResource();
+		Jedis redis = jedisPoll.getResource();
 		try {
 			log = redis.rpop(uploadQueue);
 		} catch (Exception e) {
-			closeRedis();
+			redis.close();
 			logger.error("redis error: [rpop from uploadQueue]"+e.getMessage());
+			return false;
 		}
 		
 		VoiceToWordsEntity voiceEntity = null;
 		if (log == null) {
-			closeRedis();
+			redis.close();
 			return false;
 		}
+		logger.info("upload start [2]");
 		voiceEntity = JSON.parseObject(log, VoiceToWordsEntity.class);
 		if(voiceEntity == null){
-			closeRedis();
+			redis.close();
 			logger.error("upload - json parse error:"+log);
 			return false;
 		}
@@ -118,7 +120,7 @@ public class UploadService {
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("文件下载至本地出错");
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
-			closeRedis();
+			redis.close();
 			return false;
 		}
 		
@@ -151,7 +153,6 @@ public class UploadService {
 						file.delete();
 					}
 				}
-				
 			} else {
 				
 				// 创建任务失败-服务端异常
@@ -159,7 +160,6 @@ public class UploadService {
 				voiceEntity.setStatus(4);
 				voiceEntity.setRemark("上传失败"+",ecode=" + uploadMsg.getErr_no()+",failed=" + uploadMsg.getFailed());
 				voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
-				closeRedis();
 				return false;
 			}
 		} catch (LfasrException e) {
@@ -170,15 +170,11 @@ public class UploadService {
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("上传异常"+",ecode=" + uploadMsg.getErr_no()+",failed=" + uploadMsg.getFailed());
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
-			closeRedis();
 			return false;
+		} finally {
+			redis.close();
 		}
 		lc = null;
-		redis.close();
 		return true;
-	}
-	
-	public void closeRedis() {
-		redis.close();
 	}
 }

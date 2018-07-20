@@ -66,7 +66,7 @@ public class ResultService {
 		//查询下次查询时间小于当前时间的记录
 		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 20);
 
-		logger.info("总数量"+voiceList.size());
+		logger.info(Thread.currentThread().getName()+" 总数量"+voiceList.size());
 		if (voiceList != null) {
 			for(VoiceToWordsEntity item : voiceList) {
 				getResult(item);

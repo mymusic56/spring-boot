@@ -38,8 +38,6 @@ public class DownloadService{
 	private String downloadQueue = "REORDER:voice_to_words_down_queue";
 	private String uploadQueue = "REORDER:voice_to_words_upload_queue";
 	
-	Jedis redis;
-	
 	@Autowired
 	JedisPool jedisPoll;
 	
@@ -56,30 +54,32 @@ public class DownloadService{
 	 * @return
 	 */
 	public Boolean download(){
-		redis = jedisPoll.getResource();
+		Jedis redis = jedisPoll.getResource();
 		//获取待下载的数据
 		String log = null;
 		try {
 			log = redis.rpop(this.downloadQueue);
 		} catch (Exception e) {
-			closeRedis();
+			redis.close();
 			logger.error("redis error: [rpop from downloadQueue]"+e.getMessage());
 		}
+		logger.info(" download start [1]");
 		if (log == null) {
-			closeRedis();
+			redis.close();
 			return false;
 		}
+		logger.info(" download start [2]:"+log);
 		
 		VoiceToWordsEntity voiceEntity = JSON.parseObject(log, VoiceToWordsEntity.class);
 		if(voiceEntity == null){
-			closeRedis();
+			redis.close();
 			logger.error("download - parse error:"+log);
 			return false;
 		}
 		
 		//路径为空
 		if("".equals(voiceEntity.getUrl())){
-			closeRedis();
+			redis.close();
 			logger.error("文件路径为空:"+log);
 			//标记为异常
 			voiceEntity.setRemark("文件路径为空");
@@ -106,7 +106,7 @@ public class DownloadService{
 		if (voiceEntity.getUrl().startsWith("file")) {
 			remoteUrl = getSingUrl(voiceEntity.getC_id());
 			if (remoteUrl == null || "".equals(remoteUrl)) {
-				closeRedis();
+				redis.close();
 				logger.error("下载失败，签名链接获取失败:"+log);
 				voiceEntity.setStatus(4);
 				voiceEntity.setRemark("下载失败，签名链接获取失败");
@@ -118,11 +118,11 @@ public class DownloadService{
 		String filePath = FileDownload.saveUrlAs(remoteUrl, tempDir, filename, "GET");
 //			logger.info("end download file:"+filePath);
 		if("".equals(filePath)){
-			closeRedis();
 			logger.error("下载失败:"+log);
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("下载失败");
 			voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
+			redis.close();
 			return false;
 		}
 		
@@ -133,19 +133,21 @@ public class DownloadService{
 		voiceEntity.setLocal_path(filePath);
 		long flag = voiceDao.updateLocalPath(voiceEntity.getId(), voiceEntity);
 		try {
-			redis.lpush(uploadQueue, JSON.toJSONString(voiceEntity));
+			long aa = redis.lpush(uploadQueue, JSON.toJSONString(voiceEntity));
+			logger.info(filePath+" download end..................................");
 		} catch (Exception e) {
-			closeRedis();
 			logger.error("redis error: [lpush to uploadQueue]"+e.getMessage());
+		} finally {
+			redis.close();
 		}
-		closeRedis();
 		return true;
 	}
 	
 	public String getSingUrl(long fileId) {
 		CloseableHttpResponse httpResponse = null;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost("http://recorder.nineton.cn/v3.record/convertSignUrl");
+//		HttpPost httpPost = new HttpPost("http://recorder.nineton.cn/v3.record/convertSignUrl");
+		HttpPost httpPost = new HttpPost("http://rec.qm.com/v3.record/convertSignUrl");
 		String result = "";
 		ArrayList param = new ArrayList();
 		param.add(new BasicNameValuePair("c_id", String.valueOf(fileId)));
@@ -189,9 +191,5 @@ public class DownloadService{
 		}
 
 		return result;
-	}
-	
-	public void closeRedis() {
-		redis.close();
 	}
 }

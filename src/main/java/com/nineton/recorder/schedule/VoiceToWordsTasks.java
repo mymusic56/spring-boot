@@ -7,14 +7,18 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.service.DownloadService;
 import com.nineton.recorder.service.ResultService;
 import com.nineton.recorder.service.UploadService;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
 @Component
 public class VoiceToWordsTasks {
 	private static final Log logger = LogFactory.getLog(VoiceToWordsTasks.class);
-
+	
 	@Autowired
 	DownloadService downService;
 	
@@ -24,21 +28,21 @@ public class VoiceToWordsTasks {
 	@Autowired
 	ResultService resultService;
 	
-	@Scheduled(initialDelay = 1000, fixedDelay = 2000)
+	@Scheduled(initialDelay = 1000, fixedDelay = 5000)
 	@Async
 	public void fileDownload() {
 		downService.download();
 //		logger.info(" .+++++++++++++. download ++++++++++");
 	}
 
-	@Scheduled(initialDelay = 2000, fixedDelay = 2000)
+	@Scheduled(initialDelay = 2000, fixedDelay = 5000)
 	@Async
 	public void fileUpload() {
 		uploadService.upload();
 //		logger.info(" ............... upload ...............");
 	}
 
-	@Scheduled(initialDelay = 2000, fixedDelay = 2000)
+	@Scheduled(cron = "0 0/5 * * * *")
 	public void fileResult() {
 //		logger.info(" ----------- result -----------");
 		resultService.getResult();

@@ -11,6 +11,7 @@ import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.RecordLists;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 @RestController
 @RequestMapping(path = "/hello")
@@ -22,8 +23,10 @@ public class HelloController {
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
 	
-	@Autowired
 	Jedis redis;
+	
+	@Autowired
+	JedisPool jedisPool;
 	
 	@RequestMapping("/index")
 	public String helloWorld() {
@@ -43,8 +46,10 @@ public class HelloController {
 	@RequestMapping("/getRedis")
 	public String getByRedisKey() {
 		System.out.println(new Date(System.currentTimeMillis()+28800000));
+		redis = jedisPool.getResource();
 		String value = redis.get("a");
 		System.out.println(value);
+		redis.close();
 		return value;
 	}
 	

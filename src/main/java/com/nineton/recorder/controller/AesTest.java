@@ -18,7 +18,8 @@ public class AesTest {
     	
     	DownloadService aa = new DownloadService();
     	long fileId = 1513417206608L;
-    	String result = aa.getSingUrl(fileId);
+    	int userId = 0;
+    	String result = aa.getSingUrl(fileId, userId);
     	System.out.println(result);
     	RequestRootBean result2 = JSON.parseObject(result, RequestRootBean.class);
     	System.out.println(result2.getStatus());

@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,9 @@ public class DownloadService{
 	
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
+	
+	@Value("${app.service.host}")
+	private String serverHost;
 	
 	public DownloadService(){
 		logger = Logger.getLogger(DownloadService.class);
@@ -104,10 +108,11 @@ public class DownloadService{
 //			logger.info("start download file: "+filename);
 		String remoteUrl = basePathTmp+voiceEntity.getUrl();
 		if (voiceEntity.getUrl().startsWith("file")) {
-			remoteUrl = getSingUrl(voiceEntity.getC_id());
+			remoteUrl = getSingUrl(voiceEntity.getC_id(), voiceEntity.getUser_id());
 			if (remoteUrl == null || "".equals(remoteUrl)) {
 				redis.close();
 				logger.error("下载失败，签名链接获取失败:"+log);
+				logger.error("下载失败，签名链接获取失败:"+voiceEntity.getC_id()+","+voiceEntity.getUser_id());
 				voiceEntity.setStatus(4);
 				voiceEntity.setRemark("下载失败，签名链接获取失败");
 				voiceDao.updateStatusById(voiceEntity.getId(), voiceEntity);
@@ -143,11 +148,10 @@ public class DownloadService{
 		return true;
 	}
 	
-	public String getSingUrl(long fileId) {
+	public String getSingUrl(long fileId, int userId) {
 		CloseableHttpResponse httpResponse = null;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-//		HttpPost httpPost = new HttpPost("http://recorder.nineton.cn/v3.record/convertSignUrl");
-		HttpPost httpPost = new HttpPost("http://rec.qm.com/v3.record/convertSignUrl");
+		HttpPost httpPost = new HttpPost("http://"+this.serverHost+"n/v3.record/convertSignUrl");
 		String result = "";
 		ArrayList param = new ArrayList();
 		param.add(new BasicNameValuePair("c_id", String.valueOf(fileId)));
@@ -158,6 +162,7 @@ public class DownloadService{
 		param.add(new BasicNameValuePair("imei", "00000000000"));
 		param.add(new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
 		param.add(new BasicNameValuePair("postmantest", "3A362DA87FA3E89A95BE27A4624D6279"));
+		param.add(new BasicNameValuePair("springboot_userid", String.valueOf(userId)));
 		param.add(new BasicNameValuePair("uuid", "3A362DA87FA3E89A95BE27A4624D6279"));
 		param.add(new BasicNameValuePair("token", "c8e768959c34f6a9048b5b9e0674127fc7a37379"));
 		
@@ -165,7 +170,7 @@ public class DownloadService{
 			httpPost.setEntity(new UrlEncodedFormEntity(param, "utf-8"));
 			httpResponse = httpClient.execute(httpPost);
 			result = EntityUtils.toString(httpResponse.getEntity());
-			
+			logger.error("签名地址获取:"+result);
 			RequestRootBean result2 = JSON.parseObject(result, RequestRootBean.class);
 			result = result2.getResult().getShare_url();
 			

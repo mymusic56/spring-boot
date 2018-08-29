@@ -131,6 +131,24 @@ public class RecordListMongoDao {
 		return rList;
 	}
 
+	public boolean updateContent(int userId, long c_id, int status, String content) {
+		long count = 0;
+		MongoCollection<Document> collection = db.getCollection(this.collectionName);
+		
+		count = collection.updateOne(
+				new Document("user_id", userId).append("c_id", c_id), 
+				combine(
+						set("has_convert", status),
+						set("content", content)
+						)
+				).getMatchedCount();
+		
+		if (count > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean updateUploadStatus(String mId, int status, String msg) {
 		long count = 0;
 		MongoCollection<Document> collection = db.getCollection("rec_record_lists");

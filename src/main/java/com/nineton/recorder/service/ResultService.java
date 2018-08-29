@@ -15,8 +15,10 @@ import com.iflytek.msp.cpdb.lfasr.client.LfasrClientImp;
 import com.iflytek.msp.cpdb.lfasr.exception.LfasrException;
 import com.iflytek.msp.cpdb.lfasr.model.Message;
 import com.iflytek.msp.cpdb.lfasr.model.ProgressStatus;
+import com.nineton.recorder.dao.RecordListMongoDao;
 import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.Content;
+import com.nineton.recorder.entity.RecordLists;
 import com.nineton.recorder.entity.VoiceToWordsEntity;
 import com.nineton.recorder.entity.WordsResultList;
 
@@ -32,6 +34,9 @@ public class ResultService {
 
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
+	
+	@Autowired
+	RecordListMongoDao recordDao;
 	
 	public ResultService() {
 		// 查询时间间隔
@@ -218,13 +223,16 @@ public class ResultService {
 				voiceEntity.setContent(originalStrBuffer.toString());
 				voiceDao.updateContentWithFinished(voiceEntity.getId(), voiceEntity);
 				
+				//保存数据到rec_record_lists列表
+				boolean a = recordDao.updateContent(voiceEntity.getUser_id(), voiceEntity.getC_id(), 1, originalStrBuffer.toString());
+				
 //				logger.info(voiceEntity.getContent());
 				
 				list = null;
 				segementStrBuffer = null;
 				originalStrBuffer = null;
 				resultMsg = null;
-				logger.info("结果处理完成， 任务ID：" + task_id);
+				logger.info("结果处理完成， 任务ID：" + task_id+", record_lists:"+a);
 				// System.out.println(resultMsg.getData());
 			} else {
 				// 转写失败，根据失败信息进行处理
@@ -232,12 +240,21 @@ public class ResultService {
 				// 保存解析后的数据
 				voiceEntity.setStatus(4);
 				voiceEntity.setRemark("转写失败: "+"Result Query: ecode=" + resultMsg.getErr_no() + ",failed=" + resultMsg.getFailed());
+				voiceDao.updateContentWithFinished(voiceEntity.getId(), voiceEntity);
+				
+				//保存数据到rec_record_lists列表
+				recordDao.updateContent(voiceEntity.getUser_id(), voiceEntity.getC_id(), 4, "");
 			}
 		} catch (LfasrException e) {
 			// 获取结果异常处理，解析异常描述信息
 			resultMsg = JSON.parseObject(e.getMessage(), Message.class);
 			voiceEntity.setStatus(4);
 			voiceEntity.setRemark("转写失败: "+"Result Query: ecode=" + resultMsg.getErr_no() + ",failed=" + resultMsg.getFailed());
+			voiceDao.updateContentWithFinished(voiceEntity.getId(), voiceEntity);
+			
+			//保存数据到rec_record_lists列表
+			recordDao.updateContent(voiceEntity.getUser_id(), voiceEntity.getC_id(), 4, "");
+			
 			logger.error("ecode=" + resultMsg.getErr_no() + ",failed=" + resultMsg.getFailed());
 		}
 		resultMsg = null;

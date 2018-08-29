@@ -142,7 +142,7 @@ public class UploadService {
 				int next_query_time = getNextQueryTime(voiceEntity.getDuration());
 				voiceEntity.setStatus(3);
 				voiceEntity.setRemark("上传成功");
-				voiceEntity.setNext_query_time(new Date(System.currentTimeMillis() + next_query_time*1000));
+				voiceEntity.setNext_query_time(new Date(System.currentTimeMillis() + next_query_time*1000 + 28800000));
 				voiceEntity.setTask_id(task_id);
 				voiceDao.updateTaskId(voiceEntity.getId(), voiceEntity);
 				

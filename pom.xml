@@ -16,7 +16,7 @@
 	</parent>
 
 	<dependencies>
-				<!--apache commons -->
+		<!--apache commons -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -43,7 +43,7 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -70,21 +70,34 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>redis.clients</groupId>
-		    <artifactId>jedis</artifactId>
-		    <version>2.9.0</version>
-		    <type>jar</type>
-		    <scope>compile</scope>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
-	    <dependency>  
-	        <groupId>cn.xunfei</groupId>  
-	        <artifactId>xunfei-lfasr</artifactId>  
-	        <version>2.0.0</version>   
+		<dependency>
+			<groupId>cn.xunfei</groupId>
+			<artifactId>xunfei-lfasr</artifactId>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- JSP -->
+		<!-- servlet 依赖. -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<!-- tomcat 的支持. -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- 这个需要为 true 热部署才有效 -->

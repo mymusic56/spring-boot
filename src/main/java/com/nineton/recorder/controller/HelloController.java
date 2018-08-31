@@ -15,6 +15,7 @@ import com.nineton.recorder.dao.RecordListMongoDao;
 import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.RecordLists;
 import com.nineton.recorder.entity.VoiceToWordsEntity;
+import com.nineton.recorder.service.DownloadService;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -28,6 +29,9 @@ public class HelloController {
 	
 	@Autowired
 	VoiceToWordsMongoDao voiceDao;
+	
+	@Autowired
+	DownloadService download;
 	
 	Jedis redis;
 	
@@ -79,5 +83,12 @@ public class HelloController {
 		
 		model.addAttribute("date", "Date: "+new Date(System.currentTimeMillis()+28800000));
 		return model;
+	}
+	
+	@RequestMapping("/getUrl")
+	public String getUrl(long fileId, int userId) {
+		String url = download.getSingUrl(fileId, userId);
+		System.out.println("url: "+url);
+		return "url:"+url;
 	}
 }

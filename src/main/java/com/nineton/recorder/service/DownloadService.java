@@ -151,7 +151,7 @@ public class DownloadService{
 	public String getSingUrl(long fileId, int userId) {
 		CloseableHttpResponse httpResponse = null;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost("http://"+this.serverHost+"n/v3.record/convertSignUrl");
+		HttpPost httpPost = new HttpPost("http://"+this.serverHost+"/v3.record/convertSignUrl");
 		String result = "";
 		ArrayList param = new ArrayList();
 		param.add(new BasicNameValuePair("c_id", String.valueOf(fileId)));

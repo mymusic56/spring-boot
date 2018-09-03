@@ -69,7 +69,7 @@ public class HelloController {
 	
 	@RequestMapping("/waitQuery")
 	public ModelAndView getWaitQuery(Map<String, Object> map) {
-		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 20);
+		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 40);
 		map.put("date", new Date(System.currentTimeMillis()));
 		
 		ModelAndView view = new ModelAndView();

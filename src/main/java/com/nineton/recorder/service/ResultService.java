@@ -41,15 +41,17 @@ public class ResultService {
 	public ResultService() {
 		// 查询时间间隔
 		intervalTimes = new HashMap<Integer, Integer>();
-		intervalTimes.put(0, 60 * 10);
+		intervalTimes.put(0, 60 * 5);
 		intervalTimes.put(1, 60 * 10);
-		intervalTimes.put(2, 60 * 30);
-		intervalTimes.put(3, 60 * 60);
-		intervalTimes.put(4, 60 * 2 *60);// 2小时
-		intervalTimes.put(5, 60 * 6 * 60);// 6小时
-		intervalTimes.put(6, 60 * 12 * 60);// 12小时
-		intervalTimes.put(7, 60 * 24 * 60);// 12小时
-		intervalTimes.put(8, 60 * 24 * 60);// 24小时
+		intervalTimes.put(2, 60 * 10);
+		intervalTimes.put(3, 60 * 20);
+		intervalTimes.put(4, 60 * 30);
+		intervalTimes.put(5, 60 * 60);
+		intervalTimes.put(6, 60 * 2 *60);// 2小时
+		intervalTimes.put(7, 60 * 6 * 60);// 6小时
+		intervalTimes.put(8, 60 * 12 * 60);// 12小时
+		intervalTimes.put(9, 60 * 24 * 60);// 12小时
+		intervalTimes.put(10, 60 * 24 * 60);// 24小时
 
 		logger = Logger.getLogger(ResultService.class);
 	}
@@ -59,20 +61,21 @@ public class ResultService {
 	}
 
 	public void getResult() {
-		// 初始化LFASR实例
-		try {
-			lc = LfasrClientImp.initLfasrClient();
-		} catch (LfasrException e) {
-			// 初始化异常，解析异常描述信息
-			Message initMsg = JSON.parseObject(e.getMessage(), Message.class);
-			logger.error("result - ecode=" + initMsg.getErr_no() + ",failed=" + initMsg.getFailed());
-			System.exit(0);
-		}
 		//查询下次查询时间小于当前时间的记录
-		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 20);
+		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 5);
 
 		logger.info(Thread.currentThread().getName()+" 总数量"+voiceList.size());
 		if (voiceList != null) {
+			// 初始化LFASR实例
+			try {
+				lc = LfasrClientImp.initLfasrClient();
+			} catch (LfasrException e) {
+				// 初始化异常，解析异常描述信息
+				Message initMsg = JSON.parseObject(e.getMessage(), Message.class);
+				logger.error("result - ecode=" + initMsg.getErr_no() + ",failed=" + initMsg.getFailed());
+				System.exit(0);
+			}
+			
 			for(VoiceToWordsEntity item : voiceList) {
 				getResult(item);
 				//每次执行完睡一秒钟

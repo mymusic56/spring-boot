@@ -96,6 +96,10 @@ public class DownloadService{
 			oldname = oldname.replace(".aac", ".m4a");
 		}
 		
+		if (oldname.endsWith(".mp4")) {//mp4文件可以通过将后缀修改为mp3后进行上传
+			oldname = oldname.replace(".mp4", ".mp3");
+		}
+		
 		String filename = voiceEntity.getUser_id()+"-"+String.valueOf(new Date().getTime())+"-"+oldname;
 		
 		String bucket = "nineton";

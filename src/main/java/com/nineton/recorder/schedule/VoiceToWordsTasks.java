@@ -42,7 +42,7 @@ public class VoiceToWordsTasks {
 //		logger.info(" ............... upload ...............");
 	}
 
-	@Scheduled(cron = "0 0/5 * * * *")
+	@Scheduled(cron = "0 0/1 * * * *")
 	public void fileResult() {
 //		logger.info(" ----------- result -----------");
 		resultService.getResult();

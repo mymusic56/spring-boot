@@ -153,7 +153,7 @@ public class VoiceToWordsMongoDao {
 		VoiceToWordsEntity entity = null;
 		for (Document doc : result) {
 			entity = new VoiceToWordsEntity();
-			entity.setC_id(doc.getLong("c_id"));
+			entity.setC_id(Long.valueOf(doc.get("c_id").toString()));
 			entity.setId(doc.get("_id").toString());
 			entity.setCreated(doc.getInteger("created"));
 			entity.setUser_id(doc.getInteger("user_id"));
@@ -191,7 +191,7 @@ public class VoiceToWordsMongoDao {
 		VoiceToWordsEntity entity = null;
 		for (Document doc : result) {
 			entity = new VoiceToWordsEntity();
-			entity.setC_id(doc.getLong("c_id"));
+			entity.setC_id(Long.valueOf(doc.get("c_id").toString()));
 			entity.setId(doc.get("_id").toString());
 			entity.setCreated(doc.getInteger("created"));
 			entity.setUser_id(doc.getInteger("user_id"));

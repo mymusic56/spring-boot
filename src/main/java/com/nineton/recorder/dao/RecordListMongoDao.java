@@ -139,7 +139,8 @@ public class RecordListMongoDao {
 				new Document("user_id", userId).append("c_id", c_id), 
 				combine(
 						set("has_convert", status),
-						set("content", content)
+						set("content", content),
+						set("words_num", content.length())
 						)
 				).getMatchedCount();
 		

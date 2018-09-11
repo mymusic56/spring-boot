@@ -52,19 +52,19 @@ public class UploadService {
 		//5分钟
 		int queryTimeInterval = 300;
 		if (duration <= 300) {
-			queryTimeInterval = 300;//5分钟
+			queryTimeInterval = 180;//3分钟
 		} else if (duration <= 1800) {
 			//半小时
-			queryTimeInterval = 600;//10分钟
+			queryTimeInterval = 300;//5分钟
 		} else if (duration < 3600) {
 			//1小时
-			queryTimeInterval = 1200;//20分钟
+			queryTimeInterval = 300;//5分钟
 		} else if (duration < 7200) {
 			//2小时
-			queryTimeInterval = 1800;//30分钟
+			queryTimeInterval = 600;//10分钟
 		} else {
 			//3小时
-			queryTimeInterval = 1800;//40分钟
+			queryTimeInterval = 1800;//20分钟
 		}
 		
 		return queryTimeInterval;

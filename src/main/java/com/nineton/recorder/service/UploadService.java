@@ -51,7 +51,9 @@ public class UploadService {
 	public int getNextQueryTime(int duration) {
 		//5分钟
 		int queryTimeInterval = 300;
-		if (duration <= 300) {
+		if (duration <= 60) {
+			queryTimeInterval = 10;//10秒钟后查询
+		} else if (duration <= 300) {
 			queryTimeInterval = 180;//3分钟
 		} else if (duration <= 1800) {
 			//半小时

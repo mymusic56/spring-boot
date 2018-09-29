@@ -41,17 +41,18 @@ public class ResultService {
 	public ResultService() {
 		// 查询时间间隔
 		intervalTimes = new HashMap<Integer, Integer>();
-		intervalTimes.put(0, 60 * 5);
-		intervalTimes.put(1, 60 * 10);
+		intervalTimes.put(0, 60 * 3);
+		intervalTimes.put(1, 60 * 5);
 		intervalTimes.put(2, 60 * 10);
-		intervalTimes.put(3, 60 * 20);
-		intervalTimes.put(4, 60 * 30);
-		intervalTimes.put(5, 60 * 60);
-		intervalTimes.put(6, 60 * 2 *60);// 2小时
-		intervalTimes.put(7, 60 * 6 * 60);// 6小时
-		intervalTimes.put(8, 60 * 12 * 60);// 12小时
-		intervalTimes.put(9, 60 * 24 * 60);// 12小时
-		intervalTimes.put(10, 60 * 24 * 60);// 24小时
+		intervalTimes.put(3, 60 * 10);
+		intervalTimes.put(4, 60 * 20);
+		intervalTimes.put(5, 60 * 30);
+		intervalTimes.put(6, 60 * 60);
+		intervalTimes.put(7, 60 * 2 *60);// 2小时
+		intervalTimes.put(8, 60 * 6 * 60);// 6小时
+		intervalTimes.put(9, 60 * 12 * 60);// 12小时
+		intervalTimes.put(10, 60 * 24 * 60);// 12小时
+		intervalTimes.put(11, 60 * 24 * 60);// 24小时
 
 		logger = Logger.getLogger(ResultService.class);
 	}

@@ -11,8 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class ScheduleConfig {
 
-    private int corePoolSize = 3;
-    private int maxPoolSize = 3;
+    private int corePoolSize = 5;
+    private int maxPoolSize = 5;
     private int queueCapacity = 10;
     @Bean
     public Executor taskExecutor() {

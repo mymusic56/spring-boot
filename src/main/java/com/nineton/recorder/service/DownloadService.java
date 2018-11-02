@@ -1,5 +1,6 @@
 package com.nineton.recorder.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.GetObjectRequest;
 import com.nineton.recorder.bean.RequestRootBean;
 import com.nineton.recorder.dao.VoiceToWordsMongoDao;
 import com.nineton.recorder.entity.VoiceToWordsEntity;
@@ -47,6 +50,18 @@ public class DownloadService{
 	
 	@Value("${app.service.host}")
 	private String serverHost;
+	
+	@Value("${oss.point}")
+	private String ossPoint;
+	
+	@Value("${oss.key}")
+	private String ossKey;
+	
+	@Value("${oss.secret}")
+	private String ossSecret;
+	
+	@Value("${oss.bucket}")
+	private String ossBucket;
 	
 	public DownloadService(){
 		logger = Logger.getLogger(DownloadService.class);
@@ -110,7 +125,7 @@ public class DownloadService{
 		
 //			System.out.println("start download file: "+filename);
 //			logger.info("start download file: "+filename);
-		String remoteUrl = basePathTmp+voiceEntity.getUrl();
+		/*String remoteUrl = basePathTmp+voiceEntity.getUrl();
 		if (voiceEntity.getUrl().startsWith("file")) {
 			remoteUrl = getSingUrl(voiceEntity.getC_id(), voiceEntity.getUser_id());
 			if (remoteUrl == null || "".equals(remoteUrl)) {
@@ -124,7 +139,9 @@ public class DownloadService{
 			}
 		}
 		
-		String filePath = FileDownload.saveUrlAs(remoteUrl, tempDir, filename, "GET");
+		String filePath = FileDownload.saveUrlAs(remoteUrl, tempDir, filename, "GET");*/
+		
+		String filePath = ossDownloadFile(voiceEntity.getUrl(), tempDir +"/"+ filename);
 //			logger.info("end download file:"+filePath);
 		if("".equals(filePath)){
 			logger.error("下载失败:"+log);
@@ -200,5 +217,30 @@ public class DownloadService{
 		}
 
 		return result;
+	}
+	
+	public String ossDownloadFile(String objectName, String localFile) {
+		// Endpoint以杭州为例，其它Region请按实际情况填写。
+		String endpoint = ossPoint;
+		// 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录 https://ram.console.aliyun.com 创建RAM账号。
+		String accessKeyId = ossKey;
+		String accessKeySecret = ossSecret;
+		String bucketName = ossBucket;
+		
+		if(objectName.startsWith("recorder")) {
+			bucketName = "nineton";
+		}
+
+		logger.error("oss download file:"+endpoint+ossBucket+objectName);
+		// 创建OSSClient实例。
+		OSSClient ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+
+		// 下载OSS文件到本地文件。如果指定的本地文件存在会覆盖，不存在则新建。
+		ossClient.getObject(new GetObjectRequest(bucketName, objectName), new File(localFile));
+
+		// 关闭OSSClient。
+		ossClient.shutdown();
+		
+		return localFile;
 	}
 }

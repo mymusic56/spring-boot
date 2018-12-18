@@ -147,6 +147,7 @@ public class VoiceToWordsMongoDao {
 		
 		FindIterable<Document> result = collection.find(
 				new Document("enabled", 1)
+				.append("type", 2)
 				.append("status", status)
 		).skip((page-1)*pageSize).limit(pageSize);
 		
@@ -184,6 +185,7 @@ public class VoiceToWordsMongoDao {
 		//查询下次查询时间小于当前时间的记录
 		FindIterable<Document> result = collection.find(
 				new Document("enabled", 1)
+				.append("type", 2)
 				.append("status", status)
 				.append("next_query_time", new Document("$lte", new Date(System.currentTimeMillis()+28800000)))
 		).skip((page-1)*pageSize).limit(pageSize);

@@ -63,7 +63,7 @@ public class ResultService {
 
 	public void getResult() {
 		//查询下次查询时间小于当前时间的记录
-		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 5);
+		List<VoiceToWordsEntity> voiceList = voiceDao.getWaitQueryList(3, 1, 30);
 
 		logger.info(Thread.currentThread().getName()+" 总数量"+voiceList.size());
 		if (voiceList != null) {
